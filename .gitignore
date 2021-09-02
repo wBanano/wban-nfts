@@ -1,0 +1,21 @@
+node_modules
+dist
+.openzeppelin
+
+# Secrets files
+.env
+.env.sh
+
+# Hardhat generated files
+artifacts
+abi
+cache
+coverage*
+deployments
+types
+
+# OpenZeppelin
+.openzeppelin/unknown-*.json
+
+# Various files
+.DS_Store

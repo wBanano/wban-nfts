@@ -1,0 +1,20 @@
+{
+	"name": "wBAN-BUSD farm Shrimp",
+	"description": "wBAN-BUSD farm shrimp on Binance Smart Chain.",
+  "image": "ipfs://QmV3pJjD3mPFiEwCWzWAQi9AWHnjqqN3BZ1THSncjjWpho",
+	"attributes:": [
+		{
+			"trait_type": "Blockchain",
+			"value": "Binance Smart Chain"
+		},
+		{
+			"trait_type": "Farm",
+			"value": "wBAN-BUSD"
+		},
+		{
+			"display_type": "boost_percentage",
+			"trait_type": "Level",
+      "value": 25
+		}
+	]
+}
