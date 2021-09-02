@@ -6,4 +6,4 @@ contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
-contract OwnableDelegateProxy { }
+contract OwnableDelegateProxy {}
