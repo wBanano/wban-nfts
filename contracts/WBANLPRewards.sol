@@ -6,6 +6,7 @@ import './OpenSeaProxyRegistry.sol';
 import './ContextMixin.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/presets/ERC1155PresetMinterPauserUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
 /**
  * NFTs for each token ID:
@@ -22,7 +23,12 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  * - 101: golden shark
  * - 102: golden whale
  */
-contract WBANLPRewards is ERC1155PresetMinterPauserUpgradeable, OwnableUpgradeable, ContextMixin {
+contract WBANLPRewards is
+    ERC1155PresetMinterPauserUpgradeable,
+    OwnableUpgradeable,
+    ReentrancyGuardUpgradeable,
+    ContextMixin
+{
     string public name;
 
     enum Farm {WBAN_STAKING, WBAN_BNB, WBAN_BUSD}
@@ -38,12 +44,13 @@ contract WBANLPRewards is ERC1155PresetMinterPauserUpgradeable, OwnableUpgradeab
     {
         __ERC1155PresetMinterPauser_init(uri);
         __Ownable_init();
+        __ReentrancyGuard_init();
         openSeaProxyRegistryAddress = _openSeaProxyRegistryAddress;
         name = 'wBAN LP Rewards';
     }
 
     /**
-     * @dev tokenId is made of a single digit being th farm ID followed by another digit for the level ID.
+     * @dev tokenId is made of a single digit being the farm ID followed by another digit for the level ID.
      */
     function resolveFarmAndLevelToTokenId(Farm farm, Level level) internal returns (uint256) {
         uint256 farmID = uint256(farm);
@@ -51,8 +58,8 @@ contract WBANLPRewards is ERC1155PresetMinterPauserUpgradeable, OwnableUpgradeab
         return farmID * 10 + levelID;
     }
 
-    function claimGoldenNFT(uint256 levelID) external {
-        // ensure that user all NFTs of this level for each farm
+    function claimGoldenNFT(uint256 levelID) external nonReentrant {
+        // ensure that user has all NFTs of this level for each farm
         require(
             balanceOf(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_STAKING, Level(levelID))) > 0,
             'Missing NFT for wBAN staking farm'
