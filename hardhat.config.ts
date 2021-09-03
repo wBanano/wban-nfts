@@ -65,6 +65,32 @@ task("wban-lp-rewards:deploy", "Deploy wBAN LP Rewards NFT")
 		}
 	});
 
+task("wban-lp-rewards:upgrade", "Upgrade wBAN LP Rewards NFT")
+	.addParam("contract", "The smart-contract address", '', types.string)
+	.setAction(async (args, hre) => {
+		const accounts = await hre.ethers.getSigners();
+		console.info(`Upgrading wBAN LP Rewards with owner "${accounts[0].address}"`)
+
+		// deploy upgradeable contract
+		const WBANLPRewards = await hre.ethers.getContractFactory("WBANLPRewards");
+		const proxy = WBANLPRewards.attach(args.contract);
+		await hre.upgrades.upgradeProxy(proxy, WBANLPRewards);
+
+		// peer into OpenZeppelin manifest to extract the implementation address
+		const ozUpgradesManifestClient = await Manifest.forNetwork(hre.network.provider);
+		const manifest = await ozUpgradesManifestClient.read();
+		const bytecodeHash = hashBytecodeWithoutMetadata(WBANLPRewards.bytecode);
+		const implementationContract = manifest.impls[bytecodeHash];
+
+		// verify implementation contract
+		if (implementationContract) {
+			console.log(`wBAN LP Rewards impl deployed at: "${implementationContract.address}"`);
+			await hre.run("verify:verify", {
+				address: implementationContract.address
+			});
+		}
+	});
+
 const config: HardhatUserConfig = {
   solidity: {
 		compilers: [
@@ -106,10 +132,11 @@ const config: HardhatUserConfig = {
 			chainId: 80001,
 		},
 		polygon: {
-			url: 'https://matic-mainnet.chainstacklabs.com',
+			url: 'https://polygon-rpc.com',
       accounts,
 			chainId: 137,
-			//gasPrice: 24000000000,
+			gasMultiplier: 1.3,
+			//gasPrice: 45000000000,
 		}
 	},
 	typechain: {

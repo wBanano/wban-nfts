@@ -98,12 +98,10 @@ contract WBANLPRewards is
      * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-free listings.
      */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
-        // Whitelist OpenSea proxy contract for easy trading.
-        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(openSeaProxyRegistryAddress);
-        if (address(proxyRegistry.proxies(_owner)) == _operator) {
+        // whitelist OpenSea proxy contract for easy trading.
+        if (_operator == openSeaProxyRegistryAddress) {
             return true;
         }
-
         return super.isApprovedForAll(_owner, _operator);
     }
 

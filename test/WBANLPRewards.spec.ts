@@ -72,6 +72,23 @@ describe('WBANLPRewards', () => {
 		});
 	});
 
+	/*
+	describe('Burn NFTs', () => {
+		it('Smart-contract owner allowed to burn a NFT', async () => {
+			const nftId = 0; // wBAN staking shrimp
+			// mint a NFT to user1
+			expect(await rewards.balanceOf(user1.address, nftId)).to.equal(0);
+			await expect(rewards.mint(user1.address, nftId, 1, "0x00"))
+				.to.emit(rewards, 'TransferSingle')
+				.withArgs(owner.address, '0x0000000000000000000000000000000000000000', user1.address, nftId, 1);
+			expect(await rewards.balanceOf(user1.address, nftId)).to.equal(1);
+			// burn this NFT
+			await rewards.burn(user1.address, nftId, 1);
+			expect(await rewards.balanceOf(user1.address, nftId)).to.equal(0);
+		});
+	})
+	*/
+
 	describe("Golden NFTs", () => {
 		it('Merges 3 shrimp NFTs as a golden one', async () => {
 			const shrimpWbanStaking = 0;
