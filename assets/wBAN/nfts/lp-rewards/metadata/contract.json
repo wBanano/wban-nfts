@@ -3,6 +3,6 @@
   "description": "NFTs distributed to wBAN Binance Smart Chain liquidity providers.",
   "image": "https://bsc.banano.cc/img/wban-logo.1c53fe25.svg",
   "external_link": "https://bsc.banano.cc",
-  "seller_fee_basis_points": 100,
+  "seller_fee_basis_points": 250,
   "fee_recipient": "0xc2B286Fb1141151928c86a9131B6BBfB7ab42CFf"
 }

@@ -2,7 +2,7 @@
 	"name": "wBAN Golden Whale",
 	"description": "wBAN golden whale on Binance Smart Chain.",
   "image": "ipfs://QmNx84funS17X1jLTYNm1WENM8xcmRdnSzdHoGpoFMM8TL",
-	"attributes:": [
+	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"

@@ -2,7 +2,7 @@
 	"name": "wBAN Golden Shrimp",
 	"description": "wBAN golden shrimp on Binance Smart Chain.",
   "image": "ipfs://Qmcg6Q7KUVug7fKeRYTgaCJT3RJCdWeRLZb3X2C7WDJEmZ",
-	"attributes:": [
+	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"

@@ -2,7 +2,7 @@
 	"name": "wBAN-BNB farm Whale",
 	"description": "wBAN-BNB farm whale on Binance Smart Chain.",
   "image": "ipfs://QmTN99obwqyFesrYExKpB9gmDdfgmKVqUQ5MWV2h3H29g4",
-	"attributes:": [
+	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"
