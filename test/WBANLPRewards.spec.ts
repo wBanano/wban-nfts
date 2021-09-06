@@ -20,7 +20,11 @@ describe('WBANLPRewards', () => {
       "WBANLPRewards",
       signers[0]
     );
-		rewards = (await upgrades.deployProxy(wBANLPRewardsFactory, ["https://game.example/api/item/{id}.json"])) as WBANLPRewards;
+		rewards = (await upgrades.deployProxy(wBANLPRewardsFactory, [
+			"https://game.example/api/contract.json",
+			"https://game.example/api/item/{id}.json",
+			"0x207Fa8Df3a17D96Ca7EA4f2893fcdCb78a304101"
+		], { initializer: "initializeWithOpenSeaProxy" })) as WBANLPRewards;
 		await rewards.deployed();
 
 		expect(rewards.address).to.properAddress;
@@ -29,14 +33,19 @@ describe('WBANLPRewards', () => {
 	describe('URI template', () => {
 		it('Allows admin to change URI', async () => {
 			expect(await rewards.uri(0)).to.equal("https://game.example/api/item/{id}.json");
+			expect(await rewards.contractURI()).to.equal("https://game.example/api/contract.json");
 			await rewards.changeURI("https://game.example/apiv2/item/{id}.json");
+			await rewards.setContractURI("https://game.example/apiv2/contract.json");
 			expect(await rewards.uri(0)).to.equal("https://game.example/apiv2/item/{id}.json");
+			expect(await rewards.contractURI()).to.equal("https://game.example/apiv2/contract.json");
 		});
 
 		it('Refuses a non-admin to change URI', async () => {
 			expect(await rewards.uri(0)).to.equal("https://game.example/api/item/{id}.json");
 			const user1_interaction = rewards.connect(user1);
 			await expect(user1_interaction.changeURI("https://game.example/apiv2/item/{id}.json"))
+				.to.be.reverted;
+			await expect(user1_interaction.setContractURI("https://game.example/apiv2/contract.json"))
 				.to.be.reverted;
 		});
 	});
