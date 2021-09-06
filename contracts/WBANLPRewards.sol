@@ -29,15 +29,15 @@ contract WBANLPRewards is
     ReentrancyGuardUpgradeable,
     ContextMixin
 {
-    string public name;
-
     enum Farm {WBAN_STAKING, WBAN_BNB, WBAN_BUSD}
 
     enum Level {Shrimp, Shark, Whale}
 
+    // The URI to the contract meta data
+    string private _contractURI;
     address openSeaProxyRegistryAddress;
 
-    function initializeWithOpenSeaProxy(string memory uri, address _openSeaProxyRegistryAddress)
+    function initializeWithOpenSeaProxy(string memory contractURI, string memory uri, address _openSeaProxyRegistryAddress)
         public
         virtual
         initializer
@@ -45,8 +45,8 @@ contract WBANLPRewards is
         __ERC1155PresetMinterPauser_init(uri);
         __Ownable_init();
         __ReentrancyGuard_init();
+        setContractURI(contractURI);
         openSeaProxyRegistryAddress = _openSeaProxyRegistryAddress;
-        name = 'wBAN LP Rewards';
     }
 
     /**
@@ -59,29 +59,39 @@ contract WBANLPRewards is
     }
 
     function claimGoldenNFT(uint256 levelID) external nonReentrant {
+        Level level = Level(levelID);
+        uint256 wbanStakingId = resolveFarmAndLevelToTokenId(Farm.WBAN_STAKING, level);
+        uint256 wbanBnbId = resolveFarmAndLevelToTokenId(Farm.WBAN_BNB, level);
+        uint256 wbanBusdId = resolveFarmAndLevelToTokenId(Farm.WBAN_BUSD, level);
         // ensure that user has all NFTs of this level for each farm
-        require(
-            balanceOf(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_STAKING, Level(levelID))) > 0,
-            'Missing NFT for wBAN staking farm'
-        );
-        require(
-            balanceOf(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_BNB, Level(levelID))) > 0,
-            'Missing NFT for wBAN-BNB farm'
-        );
-        require(
-            balanceOf(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_BUSD, Level(levelID))) > 0,
-            'Missing NFT for wBAN-BUSD farm'
-        );
+        require(balanceOf(_msgSender(), wbanStakingId) > 0, 'Missing NFT for wBAN staking farm');
+        require(balanceOf(_msgSender(), wbanBnbId) > 0, 'Missing NFT for wBAN-BNB farm');
+        require(balanceOf(_msgSender(), wbanBusdId) > 0, 'Missing NFT for wBAN-BUSD farm');
         // burn the NFTs to trade
-        _burn(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_STAKING, Level(levelID)), 1);
-        _burn(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_BNB, Level(levelID)), 1);
-        _burn(_msgSender(), resolveFarmAndLevelToTokenId(Farm.WBAN_BUSD, Level(levelID)), 1);
+        _burn(_msgSender(), wbanStakingId, 1);
+        _burn(_msgSender(), wbanBnbId, 1);
+        _burn(_msgSender(), wbanBusdId, 1);
         // mint the golden NFT
         _mint(_msgSender(), 100 + levelID, 1, '');
     }
 
     function contractURI() public view returns (string memory) {
-        return 'https://gateway.pinata.cloud/ipfs/QmYGWYGXjLtu9CYJn3kyHsSGnoWTwrRE7HTs8tq2p2Hyrx/contract.json';
+        return _contractURI;
+    }
+
+    /**
+     * Set the contract metadata URI
+     * @param uri the URI to set
+     * @dev the contract metadata should link to a metadata JSON file.
+     */
+    function setContractURI(string memory uri) public virtual {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
+        _contractURI = uri;
+    }
+
+    function changeURI(string memory uri) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
+        _setURI(uri);
     }
 
     /**
@@ -89,7 +99,7 @@ contract WBANLPRewards is
      */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
         // Whitelist OpenSea proxy contract for easy trading.
-        ProxyRegistry proxyRegistry = ProxyRegistry(openSeaProxyRegistryAddress);
+        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(openSeaProxyRegistryAddress);
         if (address(proxyRegistry.proxies(_owner)) == _operator) {
             return true;
         }

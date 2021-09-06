@@ -11,11 +11,10 @@ describe('WBANLPRewards', () => {
 	let rewards: WBANLPRewards;
 	let owner: SignerWithAddress;
 	let user1: SignerWithAddress;
-	let user2: SignerWithAddress;
 
   beforeEach(async () => {
 		const signers = await ethers.getSigners();
-		[owner, user1, user2] = signers;
+		[owner, user1] = signers;
 
 		const wBANLPRewardsFactory = await ethers.getContractFactory(
       "WBANLPRewards",
@@ -27,12 +26,22 @@ describe('WBANLPRewards', () => {
 		expect(rewards.address).to.properAddress;
 	});
 
-	it('Configures URI template correctly', async () => {
-		expect(await rewards.uri(0)).to.equal("https://game.example/api/item/{id}.json");
+	describe('URI template', () => {
+		it('Allows admin to change URI', async () => {
+			expect(await rewards.uri(0)).to.equal("https://game.example/api/item/{id}.json");
+			await rewards.changeURI("https://game.example/apiv2/item/{id}.json");
+			expect(await rewards.uri(0)).to.equal("https://game.example/apiv2/item/{id}.json");
+		});
+
+		it('Refuses a non-admin to change URI', async () => {
+			expect(await rewards.uri(0)).to.equal("https://game.example/api/item/{id}.json");
+			const user1_interaction = rewards.connect(user1);
+			await expect(user1_interaction.changeURI("https://game.example/apiv2/item/{id}.json"))
+				.to.be.reverted;
+		});
 	});
 
 	describe('Minting', () => {
-
 		it('Mints some Shrimp NFT to user1', async () => {
 			const nftId = 0; // wBAN staking shrimp
 			// user1 shouuld have no shrimp NFT

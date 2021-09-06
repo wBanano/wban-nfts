@@ -35,6 +35,7 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 });
 
 task("wban-lp-rewards:deploy", "Deploy wBAN LP Rewards NFT")
+	.addParam("contract", "The contract metadata URI", '', types.string)
 	.addParam("uri", "The URI template for the NFTs", '', types.string)
 	.addParam("opensea", "The address of the OpenSea proxy", '', types.string)
 	.setAction(async (args, hre) => {
@@ -44,7 +45,7 @@ task("wban-lp-rewards:deploy", "Deploy wBAN LP Rewards NFT")
 		// deploy upgradeable contract
 		const WBANLPRewards = await hre.ethers.getContractFactory("WBANLPRewards");
 		const wbanLPRewards = await hre.upgrades.deployProxy(
-			WBANLPRewards, [args.uri, args.opensea], { initializer: "initializeWithOpenSeaProxy" }
+			WBANLPRewards, [args.contract, args.uri, args.opensea], { initializer: "initializeWithOpenSeaProxy" }
 		);
 		await wbanLPRewards.deployed();
 		console.log(`wBAN LP Rewards proxy deployed at: "${wbanLPRewards.address}"`);

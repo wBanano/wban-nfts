@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-contract ProxyRegistry {
+contract OpenSeaProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
