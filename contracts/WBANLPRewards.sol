@@ -38,21 +38,21 @@ contract WBANLPRewards is
     address openSeaProxyRegistryAddress;
 
     function initializeWithOpenSeaProxy(
-        string memory contractURI,
+        string memory _the_contractURI,
         string memory uri,
         address _openSeaProxyRegistryAddress
     ) public virtual initializer {
         __ERC1155PresetMinterPauser_init(uri);
         __Ownable_init();
         __ReentrancyGuard_init();
-        setContractURI(contractURI);
+        setContractURI(_the_contractURI);
         openSeaProxyRegistryAddress = _openSeaProxyRegistryAddress;
     }
 
     /**
      * @dev tokenId is made of a single digit being the farm ID followed by another digit for the level ID.
      */
-    function resolveFarmAndLevelToTokenId(Farm farm, Level level) internal returns (uint256) {
+    function resolveFarmAndLevelToTokenId(Farm farm, Level level) pure internal returns (uint256) {
         uint256 farmID = uint256(farm);
         uint256 levelID = uint256(level);
         return farmID * 10 + levelID;
