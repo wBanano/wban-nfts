@@ -37,11 +37,11 @@ contract WBANLPRewards is
     string private _contractURI;
     address openSeaProxyRegistryAddress;
 
-    function initializeWithOpenSeaProxy(string memory contractURI, string memory uri, address _openSeaProxyRegistryAddress)
-        public
-        virtual
-        initializer
-    {
+    function initializeWithOpenSeaProxy(
+        string memory contractURI,
+        string memory uri,
+        address _openSeaProxyRegistryAddress
+    ) public virtual initializer {
         __ERC1155PresetMinterPauser_init(uri);
         __Ownable_init();
         __ReentrancyGuard_init();
