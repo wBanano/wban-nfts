@@ -1,11 +1,15 @@
 {
 	"name": "wBAN-BUSD farm Shark",
 	"description": "wBAN-BUSD farm shark on Binance Smart Chain.",
-  "image": "ipfs://QmTAd1biUuS4NtPu1MheqfsLWf47U39MyAhCF6cj7CS2gc",
+	"image": "ipfs://QmTAd1biUuS4NtPu1MheqfsLWf47U39MyAhCF6cj7CS2gc",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"
+		},
+		{
+			"trait_type": "DEX",
+			"value": "ApeSwap"
 		},
 		{
 			"trait_type": "Farm",
@@ -14,7 +18,7 @@
 		{
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
-      "value": 60
+			"value": 60
 		}
 	]
 }

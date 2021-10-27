@@ -1,20 +1,24 @@
 {
 	"name": "wBAN-BUSD farm Whale",
 	"description": "wBAN-BUSD farm whale on Binance Smart Chain.",
-  "image": "ipfs://QmSBCX1YLrra6ABy9vbdygzwjgbXFH7cZ7iWXMaAeN1sDs",
+	"image": "ipfs://QmSBCX1YLrra6ABy9vbdygzwjgbXFH7cZ7iWXMaAeN1sDs",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"
 		},
 		{
+			"trait_type": "DEX",
+			"value": "ApeSwap"
+		},
+		{
 			"trait_type": "Farm",
-			"value": "wBAN Staking"
+			"value": "wBAN-BUSD"
 		},
 		{
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
-      "value": 100
+			"value": 100
 		}
 	]
 }

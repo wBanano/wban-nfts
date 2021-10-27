@@ -1,11 +1,15 @@
 {
 	"name": "wBAN-BNB farm Whale",
 	"description": "wBAN-BNB farm whale on Binance Smart Chain.",
-  "image": "ipfs://QmTN99obwqyFesrYExKpB9gmDdfgmKVqUQ5MWV2h3H29g4",
+	"image": "ipfs://QmTN99obwqyFesrYExKpB9gmDdfgmKVqUQ5MWV2h3H29g4",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",
 			"value": "Binance Smart Chain"
+		},
+		{
+			"trait_type": "DEX",
+			"value": "ApeSwap"
 		},
 		{
 			"trait_type": "Farm",
@@ -14,7 +18,7 @@
 		{
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
-      "value": 100
+			"value": 100
 		}
 	]
 }
