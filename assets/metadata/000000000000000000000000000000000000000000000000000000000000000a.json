@@ -1,0 +1,24 @@
+{
+	"name": "wBAN-BNB farm Shrimp",
+	"description": "wBAN-BNB farm shrimp on Binance Smart Chain.",
+	"image": "ipfs://QmNZJV4tQv1iwcbd9mMXn43sTr6RjPYeaEarcZNBStPJXM",
+	"attributes": [
+		{
+			"trait_type": "Blockchain",
+			"value": "Binance Smart Chain"
+		},
+		{
+			"trait_type": "DEX",
+			"value": "ApeSwap"
+		},
+		{
+			"trait_type": "Farm",
+			"value": "wBAN-BNB"
+		},
+		{
+			"display_type": "boost_percentage",
+			"trait_type": "Level",
+			"value": 25
+		}
+	]
+}
