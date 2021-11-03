@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import './OpenSeaProxyRegistry.sol';
 import './ContextMixin.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/presets/ERC1155PresetMinterPauserUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
@@ -37,6 +36,8 @@ contract WBANLPRewards is
     string private _contractURI;
     address openSeaProxyRegistryAddress;
 
+    mapping(bytes32 => bool) private _receipts;
+
     function initializeWithOpenSeaProxy(
         string memory _the_contractURI,
         string memory uri,
@@ -52,10 +53,58 @@ contract WBANLPRewards is
     /**
      * @dev tokenId is made of a single digit being the farm ID followed by another digit for the level ID.
      */
-    function resolveFarmAndLevelToTokenId(Farm farm, Level level) pure internal returns (uint256) {
+    function resolveFarmAndLevelToTokenId(Farm farm, Level level) internal pure returns (uint256) {
         uint256 farmID = uint256(farm);
         uint256 levelID = uint256(level);
         return farmID * 10 + levelID;
+    }
+
+    /**
+     * Claim a NFT rewards signed by a MINTER wallet.
+     */
+    function claimFromReceipt(
+        address recipient,
+        uint256 id,
+        uint256 amount,
+        bytes memory data,
+        uint256 uuid,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        require(!paused(), 'Pausable: transfer paused');
+
+        bytes32 payloadHash = keccak256(abi.encode(recipient, id, amount, uuid));
+        bytes32 hash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', payloadHash));
+
+        require(!_receipts[hash], 'Receipt already used');
+
+        _checkSignature(hash, v, r, s);
+
+        _mint(recipient, id, amount, data);
+        _receipts[hash] = true;
+    }
+
+    function isReceiptConsumed(
+        address recipient,
+        uint256 id,
+        uint256 amount,
+        bytes memory data,
+        uint256 uuid
+    ) external view returns (bool) {
+        bytes32 payloadHash = keccak256(abi.encode(recipient, id, amount, data, uuid));
+        bytes32 hash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', payloadHash));
+        return _receipts[hash];
+    }
+
+    function _checkSignature(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal view {
+        address signer = ecrecover(hash, v, r, s);
+        require(hasRole(MINTER_ROLE, signer), 'Signature invalid');
     }
 
     function claimGoldenNFT(uint256 levelID) external nonReentrant {
