@@ -1,0 +1,164 @@
+org: wrapthatpotassium
+app: wban-nfts
+service: nft-signer
+useDotenv: true
+#variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-s3-local
+  - serverless-dynamodb-local
+  - serverless-offline # Needs to be the last one
+
+package:
+  patterns:
+    - "!.dynamodb"
+    - "!.tmp"
+    - "!tests"
+    - "!*.rdb"
+    - "!*.csv"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  timeout: 30
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:GetObject"
+            - "s3:PutObject"
+          Resource:
+            Fn::Join:
+              - ""
+              - - "arn:aws:s3:::"
+                - "Ref" : airdropBucket
+                - "/*"
+        - Effect: Allow
+          Action: # Gives permission to DynamoDB tables
+            - dynamodb:*
+          Resource:
+            Fn::Join:
+              - ""
+              - - "arn:aws:dynamodb:*:*:table/"
+                - "Ref" : nftClaims
+        - Effect: "Allow"
+          Action:
+            - "s3:GetObject"
+          Resource:
+            Fn::Join:
+              - ""
+              - - "arn:aws:s3:::"
+                - "Ref" : bridgesUsersBucket
+                - "/*"
+  httpApi:
+    metrics: true
+  apiGateway:
+    apiKeys:
+      - name: wban-nfts-${sls:stage}
+        value: ${param:X-API-KEY}
+
+custom:
+  s3:
+    port: 8000
+    directory: ./.tmp
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 9000
+      inMemory: true
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+    seed:
+      domain:
+        sources:
+          - table: ${env:DYNAMODB_TABLE}
+            sources: [./tests/resources/nft-claims.json]
+
+functions:
+  mintReceipts:
+    handler: functions/mint-receipts.handler
+    events:
+      - s3:
+          bucket: wban-nfts-${sls:stage}
+          existing: true
+    environment:
+      CLAIM_EXPIRY: ${env:CLAIM_EXPIRY}
+      BLOCKCHAIN_RPC_PROVIDER: ${env:BLOCKCHAIN_RPC_PROVIDER}
+      BLOCKCHAIN_MNEMONIC: ${env:BLOCKCHAIN_MNEMONIC}
+      BLOCKCHAIN_MNEMONIC_MINTER_INDEX: ${env:BLOCKCHAIN_MNEMONIC_MINTER_INDEX}
+      DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
+    timeout: 300
+    memorySize: 256
+  extractNftHolders:
+    handler: functions/extract-nft-holders.handler
+    events:
+      - http:
+          path: /extract-nft-holders
+          method: GET
+          private: true
+    environment:
+      bucket: wban-nfts-${sls:stage}
+    memorySize: 256
+  consolidateBridgeUsers:
+    handler: functions/consolidate-bridge-users.handler
+    events:
+      - http:
+          path: /consolidate-bridge-users
+          method: GET
+          private: true
+    environment:
+      inputBucket: wban-bridges-users-${sls:stage}
+      outputBucket: wban-nfts-${sls:stage}
+    memorySize: 256
+  getAvailableReceipts:
+    handler: functions/get-available-receipts.handler
+    events:
+      - http:
+          path: /nfts-claimable
+          method: GET
+          request:
+            parameters:
+              querystrings:
+                address: true
+    environment:
+      DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
+    memorySize: 128
+
+resources:
+  Resources:
+    airdropBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: "wban-nfts-${sls:stage}"
+    bridgesUsersBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: "wban-bridges-users-${sls:stage}"
+    nftClaims:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: address
+            AttributeType: S
+          - AttributeName: nft
+            AttributeType: N
+        KeySchema:
+          - AttributeName: address
+            KeyType: HASH
+          - AttributeName: nft
+            KeyType: RANGE
+        TimeToLiveSpecification:
+          AttributeName: expiry
+          Enabled: true
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${env:DYNAMODB_RCU}
+          WriteCapacityUnits: ${env:DYNAMODB_WCU}
+        #BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: ${env:DYNAMODB_PITR_ENABLED}

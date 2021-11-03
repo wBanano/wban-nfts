@@ -1,5 +1,5 @@
 {
-	"name": "wBAN staking farm Shrimp",
+	"name": "wBAN Shrimp",
 	"description": "wBAN staking farm shrimp on Binance Smart Chain.",
 	"image": "ipfs://QmVSPrfK7VVoaGVyTjYJrnrVsWhcjNCKD6SYuWjwxDLYpc",
 	"attributes": [
@@ -15,6 +15,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 25
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

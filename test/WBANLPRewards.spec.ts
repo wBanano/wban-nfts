@@ -1,8 +1,10 @@
+import ReceiptsUtil from "./ReceiptsUtils";
 import { ethers, upgrades } from "hardhat";
 import chai from "chai";
 import { solidity } from "ethereum-waffle";
 import { WBANLPRewards } from '../artifacts/typechain/WBANLPRewards';
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber, Bytes, Signature } from "ethers";
 
 chai.use(solidity);
 const { expect } = chai;
@@ -11,10 +13,11 @@ describe('WBANLPRewards', () => {
 	let rewards: WBANLPRewards;
 	let owner: SignerWithAddress;
 	let user1: SignerWithAddress;
+	let user2: SignerWithAddress;
 
   beforeEach(async () => {
 		const signers = await ethers.getSigners();
-		[owner, user1] = signers;
+		[owner, user1, user2] = signers;
 
 		const wBANLPRewardsFactory = await ethers.getContractFactory(
       "WBANLPRewards",
@@ -69,6 +72,67 @@ describe('WBANLPRewards', () => {
 			expect(await rewards.balanceOf(user1.address, 0)).to.equal(9);
 			expect(await rewards.balanceOf(user1.address, 1)).to.equal(7);
 			expect(await rewards.balanceOf(user1.address, 2)).to.equal(5);
+		});
+
+		it('Refuses to mint if the parameters do not match the receipt', async () => {
+			const nftToMint = ethers.utils.parseEther("123");
+			const user1_interaction = rewards.connect(user1);
+			const nftId = ethers.utils.parseEther("1");
+			const data: Bytes = [];
+			const uuid = BigNumber.from(await user1.getTransactionCount());
+
+			const sig: Signature = await ReceiptsUtil.createReceipt(owner, user1.address, nftId, nftToMint, uuid);
+
+			await expect(user1_interaction.claimFromReceipt(user2.address, nftId, nftToMint, data, uuid, sig.v, sig.r, sig.s))
+				.to.be.revertedWith("Signature invalid");
+			await expect(user1_interaction.claimFromReceipt(user1.address, ethers.utils.parseEther("2"), nftToMint, data, uuid, sig.v, sig.r, sig.s))
+				.to.be.revertedWith("Signature invalid");
+			await expect(user1_interaction.claimFromReceipt(user1.address, nftId, ethers.utils.parseEther("1"), data, uuid, sig.v, sig.r, sig.s))
+				.to.be.revertedWith("Signature invalid");
+		});
+
+		it('Refuses to mint if the receipt was not signed by an address having the MINTER role', async () => {
+			const nftToMint = ethers.utils.parseEther("123");
+			const user1_interaction = rewards.connect(user1);
+			const nftId = ethers.utils.parseEther("1");
+			const data: Bytes = [];
+			const uuid = BigNumber.from(await user1.getTransactionCount());
+
+			const sig: Signature = await ReceiptsUtil.createReceipt(user1, user1.address, nftId, nftToMint, uuid);
+
+			await expect(user1_interaction.claimFromReceipt(user1.address, nftId, nftToMint, data, uuid, sig.v, sig.r, sig.s))
+				.to.be.revertedWith("Signature invalid");
+		});
+
+		it('Refuses to mint if the smart-contract is paused', async () => {
+			const nftToMint = ethers.utils.parseEther("123");
+			const user1_interaction = rewards.connect(user1);
+			const nftId = ethers.utils.parseEther("1");
+			const data: Bytes = [];
+			const uuid = BigNumber.from(await user1.getTransactionCount());
+
+			const sig: Signature = await ReceiptsUtil.createReceipt(owner, user1.address, nftId, nftToMint, uuid);
+
+			await rewards.pause();
+
+			await expect(user1_interaction.claimFromReceipt(user1.address, nftId, nftToMint, data, uuid, sig.v, sig.r, sig.s))
+				.to.be.revertedWith("Pausable: transfer paused");
+		});
+
+		it('Mints if the receipt matches parameters', async () => {
+			const nftToMint = BigNumber.from("123");
+			const user1_interaction = rewards.connect(user1);
+			const nftId = BigNumber.from("1");
+			const data: Bytes = [];
+			const uuid = BigNumber.from(await user1.getTransactionCount());
+
+			const sig: Signature = await ReceiptsUtil.createReceipt(owner, user1.address, nftId, nftToMint, uuid);
+			await expect(user1_interaction.claimFromReceipt(user1.address, nftId, nftToMint, data, uuid, sig.v, sig.r, sig.s))
+				.to.emit(rewards, 'TransferSingle')
+				.withArgs(user1.address, "0x0000000000000000000000000000000000000000", user1.address, nftId, nftToMint);
+
+			// make sure user was sent his wBAN
+			expect(await rewards.balanceOf(user1.address, nftId)).to.equal(nftToMint);
 		});
 	});
 

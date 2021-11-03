@@ -1,5 +1,5 @@
 {
-	"name": "wBAN-BNB farm Shark",
+	"name": "wBAN-BNB Shark",
 	"description": "wBAN-BNB farm shark on Binance Smart Chain.",
 	"image": "ipfs://QmZguckK7djvrhfkjMNVTFbjZ3u63r5n3e4xUzESpy4aUY",
 	"attributes": [
@@ -19,6 +19,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 60
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

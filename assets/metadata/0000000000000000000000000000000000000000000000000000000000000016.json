@@ -1,5 +1,5 @@
 {
-	"name": "wBAN-BUSD farm Whale",
+	"name": "wBAN-BUSD Whale",
 	"description": "wBAN-BUSD farm whale on Binance Smart Chain.",
 	"image": "ipfs://QmefuvYurTrAr11VAzK3nNpLM4wPQ3pb58RZ189ZNSQpK9",
 	"attributes": [
@@ -19,6 +19,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 100
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

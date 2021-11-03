@@ -1,5 +1,5 @@
 {
-	"name": "wBAN-BNB farm Shrimp",
+	"name": "wBAN-BNB Shrimp",
 	"description": "wBAN-BNB farm shrimp on Binance Smart Chain.",
 	"image": "ipfs://QmNZJV4tQv1iwcbd9mMXn43sTr6RjPYeaEarcZNBStPJXM",
 	"attributes": [
@@ -19,6 +19,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 25
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

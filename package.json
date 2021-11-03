@@ -1,6 +1,6 @@
 {
    "name": "wban-nfts",
-   "version": "0.2.0",
+   "version": "0.3.00",
    "description": "Smart-contracts for wBAN NFTs",
    "author": "Wrap That Potassium <wrap-that-potassium@protonmail.com>",
    "license": "GPL-3.0-or-later",

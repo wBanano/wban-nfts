@@ -1,5 +1,5 @@
 {
-	"name": "wBAN staking farm Whale",
+	"name": "wBAN Whale",
 	"description": "wBAN staking farm whale on Binance Smart Chain.",
 	"image": "ipfs://QmfMyTegjAhKKnWLJMGUQeLfx8ztUMz8TEDGfEM1K6xLMb",
 	"attributes": [
@@ -15,6 +15,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 100
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

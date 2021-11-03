@@ -1,5 +1,5 @@
 {
-	"name": "wBAN staking farm Shark",
+	"name": "wBAN Shark",
 	"description": "wBAN staking farm shark on Binance Smart Chain.",
 	"image": "ipfs://QmepX8X7Ybm75fByqapdoP2F9JQgq1fa1a4mZdXxnAbQmd",
 	"attributes": [
@@ -15,6 +15,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 60
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

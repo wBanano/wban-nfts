@@ -1,5 +1,5 @@
 {
-	"name": "wBAN-BUSD farm Shark",
+	"name": "wBAN-BUSD Shark",
 	"description": "wBAN-BUSD farm shark on Binance Smart Chain.",
 	"image": "ipfs://QmYte6et8UgPu6cMzf2qyJTyCzZuMrYx8YovezxVJryDwf",
 	"attributes": [
@@ -19,6 +19,10 @@
 			"display_type": "boost_percentage",
 			"trait_type": "Level",
 			"value": 60
+		},
+		{
+			"trait_type": "Designer",
+			"value": "SoggyApplePie"
 		}
 	]
 }

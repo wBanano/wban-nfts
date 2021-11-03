@@ -1,0 +1,20 @@
+{
+  "name": "nft-signer-lambda",
+  "version": "1.0.0",
+  "description": "Lambda generating claims for NFTs.",
+  "author": "Wrap That Potassium <wrap-that-potassium@protonmail.com>",
+  "dependencies": {
+    "@fast-csv/format": "^4.3.5",
+    "@fast-csv/parse": "^4.3.5",
+    "@urql/core": "^2.3.5",
+    "cross-fetch": "^3.1.4",
+    "ethers": "^5.4.7",
+    "graphql": "^16.0.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1022.0",
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-offline": "^8.2.0",
+    "serverless-s3-local": "^0.6.20"
+  }
+}

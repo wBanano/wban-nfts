@@ -91,6 +91,18 @@ task("wban-lp-rewards:upgrade", "Upgrade wBAN LP Rewards NFT")
 		}
 	});
 
+task("wban-lp-rewards:change-metadata", "Upgrade wBAN LP Rewards NFT")
+  .addParam("contract", "The smart-contract address", '', types.string)
+	.addParam("uri", "The new URI for metadata files", '', types.string)
+	.setAction(async (args, hre) => {
+		const accounts = await hre.ethers.getSigners();
+		console.info(`Changing wBAN LP Rewards with owner "${accounts[0].address}" metadata URI to "${args.uri}"`)
+
+		const WBANLPRewards = await hre.ethers.getContractFactory("WBANLPRewards");
+		const rewards = WBANLPRewards.attach(args.contract);
+		await rewards.changeURI(args.uri);
+	});
+
 const config: HardhatUserConfig = {
   solidity: {
 		compilers: [
@@ -128,8 +140,10 @@ const config: HardhatUserConfig = {
     },
 		polygontestnet: {
 			url: 'https://rpc-mumbai.maticvigil.com',
-      accounts,
+			accounts,
 			chainId: 80001,
+			//gasMultiplier: 1.1,
+			//gasPrice: 45000000000,
 		},
 		polygon: {
 			url: 'https://polygon-rpc.com',
