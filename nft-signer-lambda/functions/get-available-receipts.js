@@ -29,7 +29,7 @@ exports.handler = async (event) => {
   console.info(`Found ${nfts.length} different NFTs for "${address}"`);
 
 	// check CORS before answering
-	const allowedOrigins = ['http://localhost:8080', 'https://polygon-testnet.banano.cc', 'https://polygon.banano.cc'];
+	const allowedOrigins = ['http://localhost:8080', 'https://wrap.banano.cc', 'https://wban-testing.banano.cc'];
   const origin = event.headers.origin;
   if (allowedOrigins.includes(origin)) {
 		return {
