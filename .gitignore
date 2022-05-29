@@ -1,6 +1,6 @@
 node_modules
 dist
-.openzeppelin
+output
 yarn.lock
 *.csv
 

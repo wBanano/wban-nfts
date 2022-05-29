@@ -1,7 +1,7 @@
 {
 	"name": "wBAN-BUSD Shark",
 	"description": "wBAN-BUSD farm shark on Binance Smart Chain.",
-	"image": "ipfs://QmYte6et8UgPu6cMzf2qyJTyCzZuMrYx8YovezxVJryDwf",
+	"image": "ipfs://{{shark-wban-busd}}",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",

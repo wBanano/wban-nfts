@@ -1,7 +1,7 @@
 {
 	"name": "wBAN-BUSD Whale",
 	"description": "wBAN-BUSD farm whale on Binance Smart Chain.",
-	"image": "ipfs://QmefuvYurTrAr11VAzK3nNpLM4wPQ3pb58RZ189ZNSQpK9",
+	"image": "ipfs://{{whale-wban-busd}}",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",

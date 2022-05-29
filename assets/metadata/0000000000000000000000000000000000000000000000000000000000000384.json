@@ -1,7 +1,7 @@
 {
 	"name": "Mermonkey",
 	"description": "Airdrop done for wBAN 6 months anniversary to all wBAN bridges users.",
-	"image": "ipfs://Qmazf7KK5PtrH1iARZS1LWV3rG18U93ayHyeyGKoX8qQYP",
+	"image": "ipfs://{{mermonkey}}",
 	"attributes": [
 		{
 			"trait_type": "Designer",

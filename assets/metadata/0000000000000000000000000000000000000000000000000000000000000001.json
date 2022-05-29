@@ -1,7 +1,7 @@
 {
 	"name": "wBAN Shark",
 	"description": "wBAN staking farm shark on Binance Smart Chain.",
-	"image": "ipfs://QmepX8X7Ybm75fByqapdoP2F9JQgq1fa1a4mZdXxnAbQmd",
+	"image": "ipfs://{{shark-wban-staking}}",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",

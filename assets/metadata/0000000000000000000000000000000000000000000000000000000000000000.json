@@ -1,7 +1,7 @@
 {
 	"name": "wBAN Shrimp",
 	"description": "wBAN staking farm shrimp on Binance Smart Chain.",
-	"image": "ipfs://QmVSPrfK7VVoaGVyTjYJrnrVsWhcjNCKD6SYuWjwxDLYpc",
+	"image": "ipfs://{{shrimp-wban-staking}}",
 	"attributes": [
 		{
 			"trait_type": "Blockchain",
