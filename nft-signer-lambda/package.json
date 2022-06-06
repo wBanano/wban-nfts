@@ -14,7 +14,11 @@
   "devDependencies": {
     "aws-sdk": "^2.1022.0",
     "serverless-dynamodb-local": "^0.2.40",
-    "serverless-offline": "^8.2.0",
-    "serverless-s3-local": "^0.6.20"
-  }
+    "serverless-offline": "^8.8.0",
+    "serverless-s3-local": "^0.6.22"
+  },
+	"scripts": {
+		"deploy:staging": "sls deploy --stage staging",
+		"deploy:prod": "sls deploy --stage prod"
+	}
 }

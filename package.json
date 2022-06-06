@@ -39,6 +39,7 @@
       "@types/mocha": "^9.0.0",
       "@types/mustache": "^4.1.2",
       "@types/node": "^14.14.37",
+      "@types/sharp": "^0.30.2",
       "bottleneck": "^2.19.5",
       "chai": "^4.3.4",
       "copyfiles": "^2.4.1",
@@ -83,6 +84,6 @@
       "prettier": "prettier --write \"contracts/**/*.{sol,ts,js}\"",
       "coverage": "yarn hardhat coverage",
       "node:watch": "yarn hardhat node --watch",
-      "ipfs:work": "ts-node ./src/main.ts"
+      "ipfs:prepare": "ts-node ./src/main.ts"
    }
 }

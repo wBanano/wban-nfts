@@ -58,7 +58,10 @@ exports.handler = async (event) => {
 	const polygonRows = await readCSV(inputBucket, "bridge-polygon-users.csv");
 	console.log(`Found ${polygonRows.length} users in Polygon bridge`);
 
-	const allUsersDuplicatesIncluded = [...bscRows, ...polygonRows];
+	const fantomRows = await readCSV(inputBucket, "bridge-fantom-users.csv");
+	console.log(`Found ${fantomRows.length} users in Fantom bridge`);
+
+	const allUsersDuplicatesIncluded = [...bscRows, ...polygonRows, ...fantomRows];
 	console.debug(`Found ${allUsersDuplicatesIncluded.length} users, duplicates included`);
 
 	const allUsers = allUsersDuplicatesIncluded.reduce((count, address) => {
@@ -71,15 +74,20 @@ exports.handler = async (event) => {
 		}
 	}, {});
 
+	/*
 	const singleBridgeUsers = Object.keys(allUsers).filter(address => allUsers[address] === 1);
 	console.debug(`Found ${singleBridgeUsers.length} single bridge users`);
 
-	const bothBridgesUsers = Object.keys(allUsers).filter(address => allUsers[address] > 1);
-	console.debug(`Found ${bothBridgesUsers.length} both bridges users`);
+	const uniqueBridgesUsers = Object.keys(allUsers).filter(address => allUsers[address] > 1);
+	console.debug(`Found ${uniqueBridgesUsers.length} unique bridges users`);
+	*/
 
 	const rows = [];
+	/*
 	singleBridgeUsers.forEach(user => rows.push([user, '900', 1]));
-	bothBridgesUsers.forEach(user => rows.push([user, '900', 2]));
+	uniqueBridgesUsers.forEach(user => rows.push([user, '900', 2]));
+	*/
+	Object.keys(allUsers).forEach(user => rows.push([user, '902', allUsers[user] > 2 ? 2 : 1]));
 
 	console.info(`Generating airdrop for ${rows.length} users`);
 

@@ -19,10 +19,11 @@ package:
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   region: us-east-1
   timeout: 30
   lambdaHashingVersion: 20201221
+  architecture: arm64
   iam:
     role:
       statements:
@@ -68,11 +69,13 @@ custom:
     stages:
       - dev
     start:
+      docker: true
       port: 9000
       inMemory: true
       migrate: true
       seed: true
       convertEmptyValues: true
+      noStart: true
     seed:
       domain:
         sources:
@@ -92,7 +95,7 @@ functions:
       BLOCKCHAIN_MNEMONIC: ${env:BLOCKCHAIN_MNEMONIC}
       BLOCKCHAIN_MNEMONIC_MINTER_INDEX: ${env:BLOCKCHAIN_MNEMONIC_MINTER_INDEX}
       DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
-    timeout: 300
+    timeout: 600
     memorySize: 256
   extractNftHolders:
     handler: functions/extract-nft-holders.handler

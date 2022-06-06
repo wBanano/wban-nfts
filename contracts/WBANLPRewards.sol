@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import './ContextMixin.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC1155/presets/ERC1155PresetMinterPauserUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import "./ContextMixin.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/presets/ERC1155PresetMinterPauserUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 /**
  * NFTs for each token ID:
@@ -23,6 +23,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  * - 102: golden whale
  * - 900: 6 months anniversary -- bridge user
  * - 901: 6 months anniversary -- previous NFT holder
+ * - 902: 1 year anniversary -- bridge user
  */
 contract WBANLPRewards is
     ERC1155PresetMinterPauserUpgradeable,
@@ -36,7 +37,7 @@ contract WBANLPRewards is
 
     // The URI to the contract meta data
     string private _contractURI;
-    address openSeaProxyRegistryAddress;
+    address public openSeaProxyRegistryAddress;
 
     mapping(bytes32 => bool) private _receipts;
 
@@ -53,15 +54,6 @@ contract WBANLPRewards is
     }
 
     /**
-     * @dev tokenId is made of a single digit being the farm ID followed by another digit for the level ID.
-     */
-    function resolveFarmAndLevelToTokenId(Farm farm, Level level) internal pure returns (uint256) {
-        uint256 farmID = uint256(farm);
-        uint256 levelID = uint256(level);
-        return farmID * 10 + levelID;
-    }
-
-    /**
      * Claim a NFT rewards signed by a MINTER wallet.
      */
     function claimFromReceipt(
@@ -73,18 +65,17 @@ contract WBANLPRewards is
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) public {
-        require(!paused(), 'Pausable: transfer paused');
+    ) external nonReentrant {
+        require(!paused(), "Pausable: transfer paused");
 
         bytes32 payloadHash = keccak256(abi.encode(recipient, id, amount, uuid, getChainID()));
-        bytes32 hash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', payloadHash));
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", payloadHash));
 
-        require(!_receipts[hash], 'Receipt already used');
+        require(!_receipts[hash], "Receipt already used");
 
         _checkSignature(hash, v, r, s);
-
-        _mint(recipient, id, amount, data);
         _receipts[hash] = true;
+        _mint(recipient, id, amount, data);
     }
 
     function isReceiptConsumed(
@@ -95,18 +86,8 @@ contract WBANLPRewards is
         uint256 uuid
     ) external view returns (bool) {
         bytes32 payloadHash = keccak256(abi.encode(recipient, id, amount, uuid, getChainID()));
-        bytes32 hash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', payloadHash));
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", payloadHash));
         return _receipts[hash];
-    }
-
-    function _checkSignature(
-        bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) internal view {
-        address signer = ecrecover(hash, v, r, s);
-        require(hasRole(MINTER_ROLE, signer), 'Signature invalid');
     }
 
     function claimGoldenNFT(uint256 levelID) external nonReentrant {
@@ -115,19 +96,24 @@ contract WBANLPRewards is
         uint256 wbanBnbId = resolveFarmAndLevelToTokenId(Farm.WBAN_BNB, level);
         uint256 wbanBusdId = resolveFarmAndLevelToTokenId(Farm.WBAN_BUSD, level);
         // ensure that user has all NFTs of this level for each farm
-        require(balanceOf(_msgSender(), wbanStakingId) > 0, 'Missing NFT for wBAN staking farm');
-        require(balanceOf(_msgSender(), wbanBnbId) > 0, 'Missing NFT for wBAN-BNB farm');
-        require(balanceOf(_msgSender(), wbanBusdId) > 0, 'Missing NFT for wBAN-BUSD farm');
+        require(balanceOf(_msgSender(), wbanStakingId) > 0, "Missing NFT for wBAN staking farm");
+        require(balanceOf(_msgSender(), wbanBnbId) > 0, "Missing NFT for wBAN-BNB farm");
+        require(balanceOf(_msgSender(), wbanBusdId) > 0, "Missing NFT for wBAN-BUSD farm");
         // burn the NFTs to trade
         _burn(_msgSender(), wbanStakingId, 1);
         _burn(_msgSender(), wbanBnbId, 1);
         _burn(_msgSender(), wbanBusdId, 1);
         // mint the golden NFT
-        _mint(_msgSender(), 100 + levelID, 1, '');
+        _mint(_msgSender(), 100 + levelID, 1, "");
     }
 
-    function contractURI() public view returns (string memory) {
+    function contractURI() external view returns (string memory) {
         return _contractURI;
+    }
+
+    function changeURI(string memory uri) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
+        _setURI(uri);
     }
 
     /**
@@ -138,11 +124,6 @@ contract WBANLPRewards is
     function setContractURI(string memory uri) public virtual {
         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
         _contractURI = uri;
-    }
-
-    function changeURI(string memory uri) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
-        _setURI(uri);
     }
 
     /**
@@ -156,8 +137,28 @@ contract WBANLPRewards is
         return super.isApprovedForAll(_owner, _operator);
     }
 
+    /**
+     * @dev tokenId is made of a single digit being the farm ID followed by another digit for the level ID.
+     */
+    function resolveFarmAndLevelToTokenId(Farm farm, Level level) internal pure returns (uint256) {
+        uint256 farmID = uint256(farm);
+        uint256 levelID = uint256(level);
+        return farmID * 10 + levelID;
+    }
+
+    function _checkSignature(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal view {
+        address signer = ecrecover(hash, v, r, s);
+        require(hasRole(MINTER_ROLE, signer), "Signature invalid");
+    }
+
     function getChainID() internal view returns (uint256) {
         uint256 id;
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             id := chainid()
         }

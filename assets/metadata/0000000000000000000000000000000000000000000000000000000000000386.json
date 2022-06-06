@@ -1,0 +1,12 @@
+{
+	"name": "wBAN First Anniversary",
+	"description": "Airdrop done for wBAN 1 year anniversary to all wBAN bridges users.",
+	"image": "ipfs://{{anniversary-first}}",
+	"animation_url": "ipfs://{{anniversary-first-animation}}",
+	"attributes": [
+		{
+			"trait_type": "Designer",
+			"value": "Ryūjin"
+		}
+	]
+}

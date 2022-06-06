@@ -139,17 +139,17 @@ const config: HardhatUserConfig = {
       url: "https://rinkeby.infura.io/v3/2b0e677e7a214cc9855fa34e2e1f682e"
     },
 		polygontestnet: {
-			url: 'https://rpc-mumbai.maticvigil.com',
+			url: 'https://matic-mumbai.chainstacklabs.com',
 			accounts,
 			chainId: 80001,
-			//gasMultiplier: 1.1,
+			gasMultiplier: 1.1,
 			//gasPrice: 45000000000,
 		},
 		polygon: {
 			url: 'https://polygon-rpc.com',
       accounts,
 			chainId: 137,
-			gasMultiplier: 1.3,
+			gasMultiplier: 1.1,
 			//gasPrice: 45000000000,
 		}
 	},
